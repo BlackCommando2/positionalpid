@@ -15,6 +15,7 @@ public:
     double aggKp=0.03, aggKi=0, aggKd=0.00;
     double softKp=0.01, softKi=0, softKd=0.00;
     
+    static long stoppc;
     int softThreshold = 0;
     long diff  = 0;
     bool enable = true;
@@ -55,14 +56,17 @@ public:
         this->softKd = Kd;
         myPID->SetTunings(Kp,Ki,Kd);
     }
+
     void compute(){
         if(enable){
-           
             Input = mtr->getReadings();
-            if(abs(Input)<softThreshold){
+            if(abs(Input-targetPulse)<softThreshold)
+            {
+                // Serial.println("SOFT");
                 this->setSoftTunings(softKp,softKi,softKd);
             }
             else{
+                // Serial.println("AGG");
                 this->setAggTunings(aggKp,aggKi,aggKd);
             }
             myPID->Compute();
